@@ -1,7 +1,7 @@
 <?php
-$servername = "192.168.0.16";
-$username = "";
-$password = "f103";
+$servername = "localhost";
+$username = "user";
+$password = "password";
 $dbname = "school";
 
 // Create connection
@@ -21,35 +21,37 @@ $sql1 = 'SELECT PLACEHOLDER_tempValue from students ORDER BY  PLACEHOLDER_timest
 $result = "mysqli_query($conn, $sql1)";
 
 while($row2 = mysql_fetch_array($result)) {
-   echo $row1['fieldname'];
+  // echo $row1['fieldname'];
    $currentTemp = $row1;
    //debugging bullshit
 };
 $sql2 = 'SELECT * PLACEHOLDER_timestamp from students ORDER BY  PLACEHOLDER_timestamp DESC';
 $result2 = "mysqli_query($conn, $sql2)";
-
+//IMPORTANT: using SQL TIMESTAMP so I can convert it to human readable format easier
 while($row2 = mysql_fetch_array($result2)) {
-   echo $row2['fieldname'];
+  // echo $row2['fieldname'];
     $dateTime = $row2;
     //debugging bullshit
 };
 $sql3 = 'SELECT * PLACEHOLDER_Humidity from students ORDER BY  PLACEHOLDER_timestamp DESC';
 $result3 = "mysqli_query($conn, $sql3)";
 
-while($row4 = mysql_fetch_array($result4)) {
-   echo $row4['fieldname'];
+while($row3 = mysql_fetch_array($result3)) {
+  // echo $row4['fieldname'];
+  $currentHumid = $row3;
 }
 
 //debugging bullshit
 //COUNT THE NUMBER OF rows
-$sql4 = 'SELECT COUNT(PLACEHOLDER_tempValue) from students';
+/*$sql4 = 'SELECT COUNT(PLACEHOLDER_tempValue) from students';
 $countTemps = "mysqli_query($conn, $sql4)";
 
 $sql5 = 'SELECT COUNT(PLACEHOLDER_timestamp) from students';
 $countDate = "mysqli_query($conn, $sql5)";
 
 $sql6 = 'SELECT COUNT(PLACEHOLDER_Humidity) from students';
-$countHumids = "mysqli_query($conn, $sql6)";
+$countHumids = "mysqli_query($conn, $sql6)"; */
+//ok this is getting to complex
 
 mysqli_close($conn);
 ?>
@@ -84,6 +86,10 @@ mysqli_close($conn);
  #400:onhover {
    background-color:green;
  }
+ p {
+   background-color: red;
+   font-size: 20px;
+ }
  /* css */
   </style>
   <script>
@@ -98,7 +104,7 @@ mysqli_close($conn);
   		text: "Temperature & Humidity"
   	},
   	axisX: {
-  		title: "Timestamp"
+  		title: "Time in HST"
   	},
   	axisY:{
   		postfix: "",
@@ -118,7 +124,7 @@ mysqli_close($conn);
   		type: "line",
   		xValueType: "dateTime",
   		yValueFormatString: "#### C",
-  		xValueFormatString: "hh:mm:ss TT",
+  		xValueFormatString: "MMMM:DDD:hh:mm:ss TT", //snowflakey time string
   		showInLegend: true,
   		name: "Temperature",
   		dataPoints: dataPoints1
@@ -132,6 +138,7 @@ mysqli_close($conn);
   			dataPoints: dataPoints2
   	}]
   });
+  //code src = https://canvasjs.com/
 
   function toggleDataSeries(e) {
   	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
@@ -150,11 +157,22 @@ mysqli_close($conn);
 
   var time = [];
   time.push(<?php echo json_encode($dateTime, JSON_NUMERIC_CHECK); ?>);
-
+  //script expects unix epoch timestamp
+/*  date = new Date(time * 1000),
+  datevalues = [
+     date.getFullYear(),
+     date.getMonth()+1,
+     date.getDate(), //graph script apparently converts it from epoch to date already?
+     date.getHours(), //unneeded code
+     date.getMinutes(),
+     date.getSeconds(),
+  ]; */
+  //script expects unix epoch timestamp
+  time.push(datevalues)
   function updateChart(count) {
     //UPDATE CHART
-  	count = count || 1;
-  	var deltaY1, deltaY2;
+  //	count = count || 1;
+  //	var deltaY1, deltaY2;
 /*  	for (var i = 0; i < count; i++) {
   		time.setTime(time.getTime()+ updateInterval);
   		deltaY1 = .5 + Math.random() *(-.5-.5);
@@ -164,24 +182,50 @@ mysqli_close($conn);
 // hopefully it is sorted by oldest
   	// adding random value and rounding it to two digits.
   	yValue1 = <?php echo json_encode($Temp, JSON_NUMERIC_CHECK); ?>;
+    //cant test if inserting array from php to array in js is possible
   	yValue2 = <?php echo json_encode($Humid, JSON_NUMERIC_CHECK); ?>;
     //PULL FROM PHP WHICH PULLS FROM SQL
     // hopefully it is sorted by oldest
   	// pushing the new values
+    // time.getTime()
+    //getTime() gets unix epoch time so assuming that it converts it for us
   	dataPoints1.push({
-  		x: time.getTime(),
+  		x: time, //time is already converted by graph YAY!
   		y: yValue1
   	});
   	dataPoints2.push({
-  		x: time.getTime(),
+  		x: time, //push values so the graph can print it out
   		y: yValue2
   	});
   	}
-  var dateCount = <?php echo json_encode($countDate, JSON_NUMERIC_CHECK); ?>
-  var tempCount = <?php echo json_encode($countTemps, JSON_NUMERIC_CHECK); ?>
-  var humidCount = <?php echo json_encode($countHumids, JSON_NUMERIC_CHECK); ?>
+  //  function die(){
+//        document.write("time is 5 minutes old");
+  //    };
+
+  var datet = getTime();
+  var jcdenton = time.slice(time.length);
+  var alreadyDidThisShit = false;
+  // pray to fucking god that the sql values are miliseconds since unix epoc
+    if(bionicman + 300000 =<  datet && alreadyDidThisShit = false){
+    var say = "time ain't updated in 5 minutes bud!!!!!!111111111";
+    window.alert(say);
+    document.getElementById("1337").innerHTML = say;
+    alreadyDidThisShit = true;
+    wait(360); // window.alert() the user again in this amount of time
+    alreadyDidThisShit = false;
+    //^spam prevention value
+    //die()
+  };
+  else(){
+    document.getElementById("1337").innerHTML = " up to date! (: ";
+//tell user its up 2 dat
+  };
+
+//  var dateCount = <?php echo json_encode($countDate, JSON_NUMERIC_CHECK); ?>
+//  var tempCount = <?php echo json_encode($countTemps, JSON_NUMERIC_CHECK); ?>
+//  var humidCount = <?php echo json_encode($countHumids, JSON_NUMERIC_CHECK); ?>
   //add datapoint in orfer
-    while ( i < dateCount){
+/*    while ( i < dateCount){
       dataPoints1.push({
         x: time.getTime(),
         y: yValue1
@@ -189,6 +233,7 @@ mysqli_close($conn);
       i++
       //
     }
+    */
   	// updating legend text with  updated with y Value
   	chart.options.data[0].legendText = " Latest Temperature  $" + yValue1;
   	chart.options.data[1].legendText = " Latest Humidity  $" + yValue2;
@@ -197,7 +242,6 @@ mysqli_close($conn);
   // generates first set of dataPoints
   updateChart(100);
   setInterval(function(){updateChart()}, updateInterval);
-
   }
 </script>
 </head>
@@ -207,6 +251,8 @@ mysqli_close($conn);
 <h1> Current humidity and temp </h1>
 <div class="temps">
 </div>
+<p id="1337">
+</p>
 </form>
 </body>
 </html>
