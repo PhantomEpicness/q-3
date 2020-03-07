@@ -169,7 +169,7 @@ mysqli_close($conn);
   ]; */
   //script expects unix epoch timestamp
   time.push(datevalues)
-  function updateChart(count) {
+  function updateChart() {
     //UPDATE CHART
   //	count = count || 1;
   //	var deltaY1, deltaY2;
@@ -198,15 +198,19 @@ mysqli_close($conn);
   		y: yValue2
   	});
   	}
-  //  function die(){
+  //  function alert(){
 //        document.write("time is 5 minutes old");
   //    };
+  var bionicman = dataPoints1[dataPoints1.length];
+  document.getElementById("high").innerHTML = bionicman;
+  var unatco = dataPoints2[dataPoints2.length];
+  document.getElementById("low").innerHTML = unatco;
 
   var datet = getTime();
-  var jcdenton = time.slice(time.length);
+  var jcdenton = time[time.length];
   var alreadyDidThisShit = false;
   // pray to fucking god that the sql values are miliseconds since unix epoc
-    if(bionicman + 300000 =<  datet && alreadyDidThisShit = false){
+    if(jcdenton + 300000 =<  datet && alreadyDidThisShit = false){
     var say = "time ain't updated in 5 minutes bud!!!!!!111111111";
     window.alert(say);
     document.getElementById("1337").innerHTML = say;
@@ -214,16 +218,15 @@ mysqli_close($conn);
     wait(360); // window.alert() the user again in this amount of time
     alreadyDidThisShit = false;
     //^spam prevention value
-    //die()
+    //alert()
   };
   else(){
     document.getElementById("1337").innerHTML = " up to date! (: ";
+    wait(360); // window.alert() the user again in this amount of time
+    alreadyDidThisShit = false;
 //tell user its up 2 dat
   };
 
-//  var dateCount = <?php echo json_encode($countDate, JSON_NUMERIC_CHECK); ?>
-//  var tempCount = <?php echo json_encode($countTemps, JSON_NUMERIC_CHECK); ?>
-//  var humidCount = <?php echo json_encode($countHumids, JSON_NUMERIC_CHECK); ?>
   //add datapoint in orfer
 /*    while ( i < dateCount){
       dataPoints1.push({
@@ -240,7 +243,7 @@ mysqli_close($conn);
   	chart.render();
   }
   // generates first set of dataPoints
-  updateChart(100);
+  updateChart();
   setInterval(function(){updateChart()}, updateInterval);
   }
 </script>
@@ -252,6 +255,10 @@ mysqli_close($conn);
 <div class="temps">
 </div>
 <p id="1337">
+</p>
+<p id="high">
+</p>
+<p id="low">
 </p>
 </form>
 </body>
